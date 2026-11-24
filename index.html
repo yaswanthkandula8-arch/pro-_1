@@ -1,0 +1,1998 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luminary Books | Discover Your Next Favourite Book</title>
+    <!-- Google Fonts: Playfair Display for Editorial Elegance & Plus Jakarta Sans for Modern Readability -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;1,500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for Rich UI Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        beige: {
+                            50: '#FDFBF7',
+                            100: '#F7F2E9',
+                            200: '#EFE5D5',
+                            300: '#E2D0B5',
+                        },
+                        brown: {
+                            700: '#5C3D2E',
+                            800: '#42291E',
+                            900: '#2C1A12',
+                            950: '#1D100B',
+                        },
+                        brand: {
+                            500: '#E86A33',
+                            600: '#D4551E',
+                            700: '#B54212',
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['"Playfair Display"', 'Georgia', 'serif'],
+                        sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom subtle scrollbar & transitions */
+        body {
+            background-color: #FDFBF7;
+            color: #2C1A12;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow-x: hidden;
+        }
+        
+        /* Book 3D Spine Effect on Hover */
+        .book-card-cover {
+            box-shadow: -6px 8px 16px rgba(44, 26, 18, 0.16), inset 4px 0 8px rgba(255, 255, 255, 0.25);
+            transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease;
+        }
+        .book-card:hover .book-card-cover {
+            transform: translateY(-6px) scale(1.02);
+            box-shadow: -10px 16px 26px rgba(44, 26, 18, 0.24), inset 4px 0 8px rgba(255, 255, 255, 0.3);
+        }
+
+        /* Hide scrollbars for horizontal carousels */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+        .animate-drawer {
+            animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-brand-500 selection:text-white flex flex-col min-h-screen">
+
+    <!-- Top Announcement Bar -->
+    <div class="bg-brown-900 text-beige-100 text-xs sm:text-sm py-2 px-4 text-center font-medium tracking-wide">
+        <span>✨ Free Delivery across India on orders above ₹499 | Use Code: <strong class="text-brand-500 font-bold">READMORE20</strong> for 20% Off!</span>
+    </div>
+
+    <!-- Sticky Navigation Header -->
+    <header class="sticky top-0 z-40 bg-beige-50/95 backdrop-blur-md border-b border-beige-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20 gap-4">
+                <!-- Logo -->
+                <a href="#" onclick="navigateTo('home'); return false;" class="flex items-center gap-3 group shrink-0">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 text-white flex items-center justify-center shadow-md group-hover:scale-105 transition-transform">
+                        <i class="fa-solid fa-book-open-reader text-lg"></i>
+                    </div>
+                    <div>
+                        <span class="font-serif font-bold text-xl sm:text-2xl text-brown-900 tracking-tight block leading-none">Luminary</span>
+                        <span class="text-[11px] uppercase tracking-[0.2em] text-brand-600 font-semibold">Bookstore</span>
+                    </div>
+                </a>
+
+                <!-- Desktop Nav Links -->
+                <nav class="hidden lg:flex items-center space-x-7 text-sm font-semibold text-brown-800">
+                    <button onclick="navigateTo('home')" class="nav-link hover:text-brand-600 transition-colors py-2">Home</button>
+                    <button onclick="navigateTo('catalog')" class="nav-link hover:text-brand-600 transition-colors py-2">Explore Books</button>
+                    <button onclick="scrollToSection('categories-section')" class="nav-link hover:text-brand-600 transition-colors py-2">Categories</button>
+                    <button onclick="scrollToSection('authors-section')" class="nav-link hover:text-brand-600 transition-colors py-2">Authors</button>
+                    <button onclick="scrollToSection('offers-section')" class="nav-link hover:text-brand-600 transition-colors py-2 text-brand-600 flex items-center gap-1">
+                        <i class="fa-solid fa-fire text-xs"></i> Offers
+                    </button>
+                    <button onclick="navigateTo('about')" class="nav-link hover:text-brand-600 transition-colors py-2">About</button>
+                    <button onclick="navigateTo('contact')" class="nav-link hover:text-brand-600 transition-colors py-2">Contact</button>
+                </nav>
+
+                <!-- Search Input (Desktop) -->
+                <div class="hidden md:flex flex-1 max-w-xs relative">
+                    <input type="text" id="nav-search-input" onkeyup="handleQuickSearch(this.value)" placeholder="Search title, author, ISBN..." 
+                           class="w-full pl-10 pr-4 py-2 bg-beige-100 border border-beige-300 rounded-full text-sm text-brown-900 placeholder-brown-700/60 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition-all">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-brown-700/60 text-sm"></i>
+                </div>
+
+                <!-- Action Icons (Wishlist, Cart, User, Mobile Menu) -->
+                <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+                    <!-- Wishlist Button -->
+                    <button onclick="toggleWishlistDrawer()" aria-label="Wishlist" class="relative p-2.5 rounded-full hover:bg-beige-200/70 text-brown-900 transition-colors">
+                        <i class="fa-regular fa-heart text-lg"></i>
+                        <span id="wishlist-badge" class="hidden absolute -top-0.5 -right-0.5 w-5 h-5 rounded-full bg-brown-800 text-white text-[11px] font-bold flex items-center justify-center">0</span>
+                    </button>
+
+                    <!-- Shopping Cart Button -->
+                    <button onclick="toggleCartDrawer()" aria-label="Shopping Cart" class="relative p-2.5 rounded-full hover:bg-beige-200/70 text-brown-900 transition-colors">
+                        <i class="fa-solid fa-bag-shopping text-lg"></i>
+                        <span id="cart-badge" class="absolute -top-0.5 -right-0.5 w-5 h-5 rounded-full bg-brand-500 text-white text-[11px] font-bold flex items-center justify-center shadow-sm">0</span>
+                    </button>
+
+                    <!-- Account / Login Button -->
+                    <button id="auth-nav-btn" onclick="openAuthModal('login')" class="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brown-900 hover:bg-brown-800 text-white text-sm font-semibold transition-all shadow-sm">
+                        <i class="fa-regular fa-user text-xs"></i>
+                        <span id="auth-btn-text">Sign In</span>
+                    </button>
+
+                    <!-- Mobile Menu Toggle -->
+                    <button onclick="toggleMobileMenu()" aria-label="Open Menu" class="lg:hidden p-2.5 rounded-xl bg-beige-100 text-brown-900 hover:bg-beige-200">
+                        <i class="fa-solid fa-bars text-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Slide-down Menu -->
+        <div id="mobile-menu" class="hidden lg:hidden bg-beige-50 border-t border-beige-200 px-4 pt-3 pb-6 space-y-3 shadow-lg">
+            <div class="relative">
+                <input type="text" onkeyup="handleQuickSearch(this.value)" placeholder="Search books, authors..." 
+                       class="w-full pl-10 pr-4 py-2.5 bg-beige-100 border border-beige-300 rounded-xl text-sm">
+                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-brown-700/60"></i>
+            </div>
+            <div class="grid grid-cols-2 gap-2 text-sm font-semibold text-brown-900 pt-1">
+                <button onclick="navigateTo('home'); toggleMobileMenu();" class="text-left p-2.5 rounded-lg hover:bg-beige-100">Home</button>
+                <button onclick="navigateTo('catalog'); toggleMobileMenu();" class="text-left p-2.5 rounded-lg hover:bg-beige-100">Explore Catalog</button>
+                <button onclick="scrollToSection('categories-section'); toggleMobileMenu();" class="text-left p-2.5 rounded-lg hover:bg-beige-100">Categories</button>
+                <button onclick="scrollToSection('authors-section'); toggleMobileMenu();" class="text-left p-2.5 rounded-lg hover:bg-beige-100">Popular Authors</button>
+                <button onclick="scrollToSection('offers-section'); toggleMobileMenu();" class="text-left p-2.5 rounded-lg hover:bg-beige-100 text-brand-600">Special Offers</button>
+                <button onclick="navigateTo('about'); toggleMobileMenu();" class="text-left p-2.5 rounded-lg hover:bg-beige-100">About Us</button>
+                <button onclick="navigateTo('contact'); toggleMobileMenu();" class="text-left p-2.5 rounded-lg hover:bg-beige-100">Contact Us</button>
+                <button onclick="openAuthModal('login'); toggleMobileMenu();" class="text-left p-2.5 rounded-lg bg-brown-900 text-white text-center">Sign In / Up</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main id="app-main" class="flex-grow">
+
+        <!-- ==================== VIEW 1: HOMEPAGE ==================== -->
+        <div id="view-home" class="view-section space-y-16 sm:space-y-24 pb-20">
+            
+            <!-- 2. HERO SECTION -->
+            <section class="relative overflow-hidden bg-brown-950 text-white">
+                <!-- Background Image with Warm Dark Overlay -->
+                <div class="absolute inset-0 z-0">
+                    <img src="https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=1920&q=80" 
+                         onerror="this.src='https://placehold.co/1920x900/2C1A12/F7F2E9?text=Luminary+Bookstore'" 
+                         alt="Warm aesthetic library interior" class="w-full h-full object-cover opacity-35 scale-105">
+                    <div class="absolute inset-0 bg-gradient-to-r from-brown-950 via-brown-900/90 to-brown-950/60"></div>
+                </div>
+
+                <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 lg:py-28">
+                    <div class="grid lg:grid-cols-12 gap-12 items-center">
+                        <!-- Left Hero Content -->
+                        <div class="lg:col-span-7 space-y-6">
+                            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-500/20 border border-brand-500/40 text-brand-500 text-xs sm:text-sm font-semibold tracking-wide">
+                                <i class="fa-solid fa-sparkles"></i> Curated Literary Collection • Over 25,000+ Titles
+                            </div>
+                            <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold leading-[1.12] text-beige-50">
+                                Discover Your Next <span class="text-brand-500 italic">Favourite Book</span>
+                            </h1>
+                            <p class="text-beige-200/90 text-base sm:text-lg max-w-xl leading-relaxed">
+                                Welcome to Luminary Books — India's premier destination for timeless classics, contemporary Indian literature, gripping thrillers, and academic treasures delivered right to your doorstep.
+                            </p>
+
+                            <!-- Hero Interactive Search Bar -->
+                            <form onsubmit="handleHeroSearch(event)" class="bg-white p-2 rounded-2xl shadow-2xl max-w-xl flex flex-col sm:flex-row gap-2">
+                                <div class="flex-1 flex items-center px-3">
+                                    <i class="fa-solid fa-magnifying-glass text-brown-700/60 mr-3"></i>
+                                    <input type="text" id="hero-search-input" placeholder="Search by book title, author, or category..." 
+                                           class="w-full py-2.5 text-brown-900 placeholder-brown-700/60 focus:outline-none text-sm sm:text-base">
+                                </div>
+                                <button type="submit" class="px-6 py-3 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-semibold transition-all shadow-md flex items-center justify-center gap-2 shrink-0">
+                                    <span>Search Books</span>
+                                    <i class="fa-solid fa-arrow-right text-xs"></i>
+                                </button>
+                            </form>
+
+                            <!-- CTA Buttons & Trust Metrics -->
+                            <div class="pt-2 flex flex-wrap items-center gap-6">
+                                <button onclick="navigateTo('catalog')" class="px-7 py-3.5 rounded-full bg-beige-100 hover:bg-white text-brown-900 font-bold text-sm sm:text-base transition-all shadow-lg flex items-center gap-2">
+                                    <i class="fa-solid fa-compass text-brand-600"></i> Shop Now
+                                </button>
+                                <div class="flex items-center gap-4 text-sm text-beige-200">
+                                    <div>
+                                        <span class="block font-bold text-white text-lg">4.9/5 ★</span>
+                                        <span class="text-xs text-beige-300">50k+ Happy Readers</span>
+                                    </div>
+                                    <div class="h-8 w-px bg-beige-300/20"></div>
+                                    <div>
+                                        <span class="block font-bold text-white text-lg">100%</span>
+                                        <span class="text-xs text-beige-300">Original Editions</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Hero Floating Book Showcase -->
+                        <div class="hidden lg:flex lg:col-span-5 justify-center relative">
+                            <div class="relative w-72 h-96">
+                                <!-- Decorative Glow -->
+                                <div class="absolute -inset-4 bg-brand-500/25 rounded-full blur-2xl"></div>
+                                <!-- Back Card -->
+                                <img src="https://covers.openlibrary.org/b/isbn/9780143452126-L.jpg" 
+                                     onerror="this.src='https://placehold.co/300x450/5C3D2E/FDFBF7?text=The+Palace+of+Illusions'" 
+                                     alt="Featured Book" class="absolute -right-8 top-6 w-56 h-80 object-cover rounded-xl shadow-2xl rotate-6 border-2 border-white/20">
+                                <!-- Front Card -->
+                                <div onclick="openBookDetails(1)" class="cursor-pointer relative w-64 h-92 rounded-xl overflow-hidden shadow-2xl border-2 border-beige-200/40 group">
+                                    <img src="https://covers.openlibrary.org/b/isbn/9780735211292-L.jpg" 
+                                         onerror="this.src='https://placehold.co/320x480/E86A33/FFFFFF?text=Atomic+Habits'" 
+                                         alt="Atomic Habits" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                    <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-brown-950 via-brown-950/80 to-transparent p-4">
+                                        <span class="px-2 py-0.5 rounded bg-brand-500 text-white text-[10px] font-bold uppercase">Book of the Month</span>
+                                        <p class="font-serif font-bold text-white text-lg mt-1">Atomic Habits</p>
+                                        <p class="text-beige-200 text-xs">James Clear • ₹449</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. BOOK CATEGORIES (All 12 Categories) -->
+            <section id="categories-section" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
+                    <div>
+                        <span class="text-brand-600 font-bold text-xs uppercase tracking-widest">Browse Genres</span>
+                        <h2 class="font-serif text-3xl sm:text-4xl font-bold text-brown-900 mt-1">Explore by Category</h2>
+                    </div>
+                    <button onclick="navigateTo('catalog', 'All')" class="text-sm font-semibold text-brand-600 hover:text-brand-700 flex items-center gap-1.5 self-start sm:self-auto">
+                        View All 12 Categories <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </button>
+                </div>
+
+                <!-- 12 Clickable Category Cards -->
+                <div id="categories-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                    <!-- Populated dynamically via JS -->
+                </div>
+            </section>
+
+            <!-- 4. FEATURED BOOKS SECTION -->
+            <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
+                    <div>
+                        <span class="text-brand-600 font-bold text-xs uppercase tracking-widest">Handpicked Reads</span>
+                        <h2 class="font-serif text-3xl sm:text-4xl font-bold text-brown-900 mt-1">Featured Books</h2>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="navigateTo('catalog')" class="px-5 py-2.5 rounded-full border border-brown-900/20 hover:border-brand-500 hover:text-brand-600 text-sm font-semibold transition-all">
+                            Explore Full Catalog
+                        </button>
+                    </div>
+                </div>
+
+                <div id="featured-books-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-7">
+                    <!-- Populated dynamically via JS -->
+                </div>
+            </section>
+
+            <!-- 7. SPECIAL OFFERS & DISCOUNTS SECTION -->
+            <section id="offers-section" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="mb-8">
+                    <span class="text-brand-600 font-bold text-xs uppercase tracking-widest">Exclusive Deals</span>
+                    <h2 class="font-serif text-3xl sm:text-4xl font-bold text-brown-900 mt-1">Special Offers & Discounts</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Banner 1: Up to 50% Off -->
+                    <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-brown-900 to-brown-800 text-white p-7 sm:p-9 shadow-xl flex flex-col justify-between group">
+                        <div class="absolute right-0 bottom-0 opacity-10 text-9xl transform translate-x-6 translate-y-6 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-percent"></i>
+                        </div>
+                        <div class="space-y-3 relative z-10">
+                            <span class="inline-block px-3 py-1 rounded-full bg-brand-500 text-white text-xs font-bold uppercase tracking-wider">Mega Book Fest</span>
+                            <h3 class="font-serif text-2xl sm:text-3xl font-bold">Up to 50% OFF on Selected Books</h3>
+                            <p class="text-beige-200 text-sm max-w-md">Refresh your bookshelf with top-rated fiction, self-help, and Indian classics at half the cover price.</p>
+                        </div>
+                        <div class="pt-6 relative z-10">
+                            <button onclick="navigateTo('catalog', 'All', 'discount')" class="px-6 py-3 rounded-full bg-white text-brown-900 hover:bg-brand-500 hover:text-white font-bold text-sm transition-all shadow-md inline-flex items-center gap-2">
+                                Explore Offers <i class="fa-solid fa-arrow-right text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Banner 2: Buy 2 Get 1 Free -->
+                    <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-600 to-brand-500 text-white p-7 sm:p-9 shadow-xl flex flex-col justify-between group">
+                        <div class="absolute right-0 bottom-0 opacity-15 text-9xl transform translate-x-4 translate-y-4 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-gift"></i>
+                        </div>
+                        <div class="space-y-3 relative z-10">
+                            <span class="inline-block px-3 py-1 rounded-full bg-brown-900 text-beige-50 text-xs font-bold uppercase tracking-wider">Bundle & Save</span>
+                            <h3 class="font-serif text-2xl sm:text-3xl font-bold">Buy 2 Get 1 Free Offer</h3>
+                            <p class="text-white/90 text-sm max-w-md">Add any 3 paperbacks to your cart and automatically get the lowest-priced book completely free at checkout!</p>
+                        </div>
+                        <div class="pt-6 relative z-10">
+                            <button onclick="navigateTo('catalog', 'Fiction')" class="px-6 py-3 rounded-full bg-brown-900 text-white hover:bg-brown-950 font-bold text-sm transition-all shadow-md inline-flex items-center gap-2">
+                                Explore Offers <i class="fa-solid fa-arrow-right text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Banner 3: Special Student Discounts -->
+                    <div class="rounded-3xl bg-beige-100 border border-beige-300 p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+                        <div class="space-y-2">
+                            <div class="inline-flex items-center gap-2 text-brand-600 font-bold text-xs uppercase tracking-wider">
+                                <i class="fa-solid fa-graduation-cap"></i> Academic Perks
+                            </div>
+                            <h4 class="font-serif text-xl sm:text-2xl font-bold text-brown-900">Special Student Discounts (Extra 15% Off)</h4>
+                            <p class="text-brown-700 text-sm">Save big on Educational Books, Science & Tech, and competitive exam guides.</p>
+                        </div>
+                        <button onclick="navigateTo('catalog', 'Educational Books')" class="px-5 py-3 rounded-full bg-brown-900 hover:bg-brand-600 text-white font-semibold text-sm transition-colors shrink-0">
+                            Explore Offers
+                        </button>
+                    </div>
+
+                    <!-- Banner 4: Limited-Time Flash Deals -->
+                    <div class="rounded-3xl bg-beige-100 border border-beige-300 p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+                        <div class="space-y-2">
+                            <div class="inline-flex items-center gap-2 text-brand-600 font-bold text-xs uppercase tracking-wider">
+                                <i class="fa-solid fa-bolt"></i> Ending Tonight • 08h : 42m : 19s
+                            </div>
+                            <h4 class="font-serif text-xl sm:text-2xl font-bold text-brown-900">Limited-Time Deals Under ₹299</h4>
+                            <p class="text-brown-700 text-sm">Grab bestselling pocket editions and timeless classics before the clock runs out.</p>
+                        </div>
+                        <button onclick="navigateTo('catalog', 'All', 'under299')" class="px-5 py-3 rounded-full bg-brand-500 hover:bg-brand-600 text-white font-semibold text-sm transition-colors shrink-0">
+                            Explore Offers
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5. BESTSELLING BOOKS SECTION -->
+            <section class="bg-beige-100/80 border-y border-beige-200 py-16">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
+                        <div>
+                            <span class="text-brand-600 font-bold text-xs uppercase tracking-widest">Reader Favorites</span>
+                            <h2 class="font-serif text-3xl sm:text-4xl font-bold text-brown-900 mt-1">Bestselling Books</h2>
+                        </div>
+                        <button onclick="navigateTo('catalog', 'All', 'bestseller')" class="text-sm font-semibold text-brand-600 hover:text-brand-700 flex items-center gap-1.5">
+                            See All Bestsellers <i class="fa-solid fa-arrow-right text-xs"></i>
+                        </button>
+                    </div>
+
+                    <div id="bestselling-books-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-7">
+                        <!-- Populated dynamically via JS -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- 6. POPULAR AUTHORS SECTION -->
+            <section id="authors-section" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-2xl mx-auto mb-12">
+                    <span class="text-brand-600 font-bold text-xs uppercase tracking-widest">Literary Legends</span>
+                    <h2 class="font-serif text-3xl sm:text-4xl font-bold text-brown-900 mt-1">Popular Authors</h2>
+                    <p class="text-brown-700 text-sm sm:text-base mt-2">Explore iconic storytellers, thinkers, and visionaries whose words continue to inspire millions across India and the world.</p>
+                </div>
+
+                <div id="authors-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Populated dynamically via JS -->
+                </div>
+            </section>
+
+            <!-- RECENTLY VIEWED BOOKS (Appears automatically when user views books) -->
+            <section id="recently-viewed-section" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <span class="text-brand-600 font-bold text-xs uppercase tracking-widest">Your History</span>
+                        <h2 class="font-serif text-2xl sm:text-3xl font-bold text-brown-900 mt-1">Recently Viewed Books</h2>
+                    </div>
+                    <button onclick="clearRecentlyViewed()" class="text-xs font-semibold text-brown-700 hover:text-brand-600">Clear History</button>
+                </div>
+                <div id="recently-viewed-grid" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-5">
+                    <!-- Populated dynamically -->
+                </div>
+            </section>
+
+            <!-- CUSTOMER REVIEWS & NEWSLETTER -->
+            <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-12 gap-8 items-stretch">
+                <!-- Customer Testimonials -->
+                <div class="lg:col-span-7 bg-white rounded-3xl p-7 sm:p-9 border border-beige-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <span class="text-brand-600 font-bold text-xs uppercase tracking-widest">Reader Love</span>
+                        <h3 class="font-serif text-2xl sm:text-3xl font-bold text-brown-900 mt-1 mb-6">What Our Readers Say</h3>
+                        <div class="grid sm:grid-cols-2 gap-5">
+                            <div class="bg-beige-50 p-5 rounded-2xl border border-beige-200/80 space-y-3">
+                                <div class="text-brand-500 text-xs">
+                                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                                </div>
+                                <p class="text-sm text-brown-800 italic">"The packaging was immaculate—zero bent corners! Got my R.K. Narayan and Amish Tripathi collection within 2 days in Hyderabad."</p>
+                                <div class="pt-1">
+                                    <p class="font-bold text-brown-900 text-sm">Ananya Sharma</p>
+                                    <p class="text-xs text-brown-700">Verified Buyer • Hyderabad</p>
+                                </div>
+                            </div>
+                            <div class="bg-beige-50 p-5 rounded-2xl border border-beige-200/80 space-y-3">
+                                <div class="text-brand-500 text-xs">
+                                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                                </div>
+                                <p class="text-sm text-brown-800 italic">"Best prices in India with genuine print quality. The Buy 2 Get 1 offer helped me stock up on my semester reading list!"</p>
+                                <div class="pt-1">
+                                    <p class="font-bold text-brown-900 text-sm">Karthik Reddy</p>
+                                    <p class="text-xs text-brown-700">Verified Buyer • Bengaluru</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Newsletter Subscription -->
+                <div class="lg:col-span-5 bg-brown-900 text-white rounded-3xl p-7 sm:p-9 shadow-xl flex flex-col justify-center relative overflow-hidden">
+                    <div class="absolute -right-8 -top-8 w-36 h-36 rounded-full bg-brand-500/20 blur-xl"></div>
+                    <div class="relative z-10 space-y-4">
+                        <div class="w-12 h-12 rounded-2xl bg-brand-500/20 text-brand-500 flex items-center justify-center text-xl">
+                            <i class="fa-regular fa-envelope-open"></i>
+                        </div>
+                        <h3 class="font-serif text-2xl sm:text-3xl font-bold">Join Our Literary Club</h3>
+                        <p class="text-beige-200 text-sm leading-relaxed">Subscribe for weekly book recommendations, author interviews, and an instant <strong class="text-brand-500">₹100 voucher</strong> on your next order.</p>
+                        <form onsubmit="handleNewsletterSubmit(event)" class="space-y-3 pt-2">
+                            <input type="email" required placeholder="Enter your email address..." 
+                                   class="w-full px-4 py-3 rounded-xl bg-brown-800 border border-brown-700 text-white placeholder-beige-300/60 text-sm focus:outline-none focus:border-brand-500">
+                            <button type="submit" class="w-full py-3 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-bold text-sm transition-colors shadow-md">
+                                Subscribe & Claim ₹100 Off
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+        <!-- ==================== VIEW 2: FULL CATALOG / FILTER / SEARCH ==================== -->
+        <div id="view-catalog" class="view-section hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <!-- Breadcrumb & Header -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-beige-200">
+                <div>
+                    <nav class="text-xs font-medium text-brown-700 mb-2 flex items-center gap-2">
+                        <button onclick="navigateTo('home')" class="hover:text-brand-600">Home</button>
+                        <span>/</span>
+                        <span class="text-brown-900 font-semibold">Book Catalog</span>
+                    </nav>
+                    <h1 id="catalog-heading" class="font-serif text-3xl sm:text-4xl font-bold text-brown-900">All Books</h1>
+                </div>
+
+                <!-- Search & Sort Controls -->
+                <div class="flex flex-wrap items-center gap-3">
+                    <div class="relative flex-1 sm:flex-initial">
+                        <input type="text" id="catalog-search" oninput="applyCatalogFilters()" placeholder="Filter title or author..." 
+                               class="w-full sm:w-64 pl-9 pr-4 py-2.5 bg-white border border-beige-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-brown-700/60 text-xs"></i>
+                    </div>
+                    <select id="catalog-sort" onchange="applyCatalogFilters()" class="px-4 py-2.5 bg-white border border-beige-300 rounded-xl text-sm font-semibold text-brown-900 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                        <option value="popularity">Sort: Popularity</option>
+                        <option value="rating">Sort: Highest Rated</option>
+                        <option value="price-low">Price: Low to High</option>
+                        <option value="price-high">Price: High to Low</option>
+                        <option value="discount">Biggest Discount</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid lg:grid-cols-12 gap-8 pt-8">
+                <!-- Sidebar Filters -->
+                <aside class="lg:col-span-3 space-y-6">
+                    <div class="bg-white p-5 rounded-2xl border border-beige-200 shadow-sm space-y-5">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-bold text-brown-900">Categories</h3>
+                            <button onclick="resetCatalogFilters()" class="text-xs text-brand-600 font-semibold hover:underline">Reset</button>
+                        </div>
+                        <div id="catalog-category-list" class="space-y-1.5 max-h-80 overflow-y-auto pr-1">
+                            <!-- Populated via JS -->
+                        </div>
+
+                        <hr class="border-beige-200">
+
+                        <!-- Price Range Filter -->
+                        <div class="space-y-2">
+                            <div class="flex justify-between text-sm font-bold text-brown-900">
+                                <span>Max Price</span>
+                                <span id="price-range-label" class="text-brand-600">₹1,500</span>
+                            </div>
+                            <input type="range" id="catalog-price-range" min="150" max="1500" step="50" value="1500" oninput="updatePriceLabel(this.value); applyCatalogFilters();" class="w-full accent-brand-500 cursor-pointer">
+                            <div class="flex justify-between text-xs text-brown-700">
+                                <span>₹150</span>
+                                <span>₹1,500</span>
+                            </div>
+                        </div>
+
+                        <hr class="border-beige-200">
+
+                        <!-- Quick Badges Filter -->
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-2.5 text-sm text-brown-800 cursor-pointer">
+                                <input type="checkbox" id="filter-bestseller" onchange="applyCatalogFilters()" class="rounded text-brand-500 focus:ring-brand-500">
+                                <span>Bestsellers Only</span>
+                            </label>
+                            <label class="flex items-center gap-2.5 text-sm text-brown-800 cursor-pointer">
+                                <input type="checkbox" id="filter-discount" onchange="applyCatalogFilters()" class="rounded text-brand-500 focus:ring-brand-500">
+                                <span>30%+ Discount</span>
+                            </label>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- Catalog Results Grid -->
+                <div class="lg:col-span-9">
+                    <div class="mb-4 text-sm text-brown-700 font-medium">
+                        Showing <span id="catalog-count" class="font-bold text-brown-900">0</span> books
+                    </div>
+                    <div id="catalog-books-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Populated via JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== VIEW 3: BOOK DETAILS PAGE ==================== -->
+        <div id="view-book-details" class="view-section hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-16">
+            <div id="book-details-content">
+                <!-- Populated dynamically via JS -->
+            </div>
+
+            <!-- Related Books -->
+            <div class="border-t border-beige-200 pt-12">
+                <h2 class="font-serif text-2xl sm:text-3xl font-bold text-brown-900 mb-6">You May Also Like</h2>
+                <div id="related-books-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Populated via JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== VIEW 4: ABOUT US PAGE ==================== -->
+        <div id="view-about" class="view-section hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 space-y-16">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div class="space-y-6">
+                    <span class="text-brand-600 font-bold text-xs uppercase tracking-widest">Our Story</span>
+                    <h1 class="font-serif text-4xl sm:text-5xl font-bold text-brown-900 leading-tight">Connecting Readers With Stories That Matter</h1>
+                    <p class="text-brown-700 leading-relaxed">Founded with a deep love for the printed word, <strong>Luminary Books</strong> began as a cozy neighborhood reading room and has grown into a trusted online bookstore serving passionate readers across India.</p>
+                    <p class="text-brown-700 leading-relaxed">Whether you are searching for timeless Indian epics, contemporary fiction, academic texts, or inspiring biographies, we carefully source 100% authentic editions directly from leading publishers.</p>
+                    <div class="grid grid-cols-3 gap-4 pt-4">
+                        <div class="bg-beige-100 p-4 rounded-2xl text-center">
+                            <span class="block font-serif text-2xl sm:text-3xl font-bold text-brand-600">25K+</span>
+                            <span class="text-xs font-semibold text-brown-800">Curated Titles</span>
+                        </div>
+                        <div class="bg-beige-100 p-4 rounded-2xl text-center">
+                            <span class="block font-serif text-2xl sm:text-3xl font-bold text-brand-600">50K+</span>
+                            <span class="text-xs font-semibold text-brown-800">Happy Readers</span>
+                        </div>
+                        <div class="bg-beige-100 p-4 rounded-2xl text-center">
+                            <span class="block font-serif text-2xl sm:text-3xl font-bold text-brand-600">500+</span>
+                            <span class="text-xs font-semibold text-brown-800">Cities Served</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="rounded-3xl overflow-hidden shadow-2xl border-4 border-white">
+                    <img src="https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=1000&q=80" 
+                         onerror="this.src='https://placehold.co/800x600/42291E/FDFBF7?text=Luminary+Books+Library'" 
+                         alt="Bookstore shelves" class="w-full h-96 object-cover">
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== VIEW 5: CONTACT US PAGE ==================== -->
+        <div id="view-contact" class="view-section hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+            <div class="max-w-4xl mx-auto bg-white rounded-3xl border border-beige-200 shadow-lg overflow-hidden grid md:grid-cols-12">
+                <div class="md:col-span-5 bg-brown-900 text-white p-8 flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <span class="text-brand-500 font-bold text-xs uppercase tracking-widest">Get in Touch</span>
+                        <h2 class="font-serif text-3xl font-bold">We'd Love to Hear From You</h2>
+                        <p class="text-beige-200 text-sm">Have a question about an order, bulk institutional purchase, or book recommendation? Reach out anytime.</p>
+                    </div>
+                    <div class="space-y-4 text-sm text-beige-100 pt-8">
+                        <div class="flex items-start gap-3">
+                            <i class="fa-solid fa-location-dot text-brand-500 mt-1"></i>
+                            <span>42 Literary Lane, MG Road, Vijayawada, Andhra Pradesh 520010</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-phone text-brand-500"></i>
+                            <span>+91 98765 43210</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-envelope text-brand-500"></i>
+                            <span>support@luminarybooks.in</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="md:col-span-7 p-8">
+                    <form onsubmit="handleContactSubmit(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-brown-800 mb-1">Full Name</label>
+                            <input type="text" required placeholder="Rohan Verma" class="w-full px-4 py-2.5 rounded-xl bg-beige-50 border border-beige-300 text-sm focus:outline-none focus:border-brand-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-brown-800 mb-1">Email Address</label>
+                            <input type="email" required placeholder="rohan@example.com" class="w-full px-4 py-2.5 rounded-xl bg-beige-50 border border-beige-300 text-sm focus:outline-none focus:border-brand-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-brown-800 mb-1">Subject</label>
+                            <select class="w-full px-4 py-2.5 rounded-xl bg-beige-50 border border-beige-300 text-sm focus:outline-none focus:border-brand-500">
+                                <option>Order Tracking & Delivery</option>
+                                <option>Book Request / Availability</option>
+                                <option>Bulk / Library Order</option>
+                                <option>Feedback & Suggestions</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-brown-800 mb-1">Message</label>
+                            <textarea rows="4" required placeholder="How can we help you today?" class="w-full px-4 py-2.5 rounded-xl bg-beige-50 border border-beige-300 text-sm focus:outline-none focus:border-brand-500"></textarea>
+                        </div>
+                        <button type="submit" class="w-full py-3 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-bold text-sm transition-colors shadow-md">
+                            Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- 11. FOOTER -->
+    <footer class="bg-brown-950 text-beige-200 border-t border-brown-800 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10">
+                <!-- About Bookstore -->
+                <div class="lg:col-span-4 space-y-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-brand-500 text-white flex items-center justify-center">
+                            <i class="fa-solid fa-book-open-reader"></i>
+                        </div>
+                        <span class="font-serif font-bold text-2xl text-white">Luminary Books</span>
+                    </div>
+                    <p class="text-sm text-beige-300/80 leading-relaxed">
+                        Your warm literary sanctuary online. We bring stories, knowledge, and imagination closer to every home in India with curated selections and fast nationwide shipping.
+                    </p>
+                    <div class="flex items-center gap-3 pt-2">
+                        <a href="#" onclick="showToast('Following Luminary Books on Instagram!'); return false;" aria-label="Instagram" class="w-9 h-9 rounded-full bg-brown-800 hover:bg-brand-500 text-white flex items-center justify-center transition-colors"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#" onclick="showToast('Following Luminary Books on X!'); return false;" aria-label="Twitter" class="w-9 h-9 rounded-full bg-brown-800 hover:bg-brand-500 text-white flex items-center justify-center transition-colors"><i class="fa-brands fa-x-twitter"></i></a>
+                        <a href="#" onclick="showToast('Connected on Facebook!'); return false;" aria-label="Facebook" class="w-9 h-9 rounded-full bg-brown-800 hover:bg-brand-500 text-white flex items-center justify-center transition-colors"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="#" onclick="showToast('Subscribed on YouTube!'); return false;" aria-label="YouTube" class="w-9 h-9 rounded-full bg-brown-800 hover:bg-brand-500 text-white flex items-center justify-center transition-colors"><i class="fa-brands fa-youtube"></i></a>
+                    </div>
+                </div>
+
+                <!-- Quick Navigation Links -->
+                <div class="lg:col-span-2 space-y-3">
+                    <h4 class="font-serif font-bold text-white text-lg">Quick Links</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><button onclick="navigateTo('home')" class="hover:text-brand-500 transition-colors">Home</button></li>
+                        <li><button onclick="navigateTo('catalog')" class="hover:text-brand-500 transition-colors">Explore Books</button></li>
+                        <li><button onclick="scrollToSection('authors-section')" class="hover:text-brand-500 transition-colors">Popular Authors</button></li>
+                        <li><button onclick="scrollToSection('offers-section')" class="hover:text-brand-500 transition-colors">Special Offers</button></li>
+                        <li><button onclick="navigateTo('about')" class="hover:text-brand-500 transition-colors">About Us</button></li>
+                    </ul>
+                </div>
+
+                <!-- Book Categories -->
+                <div class="lg:col-span-3 space-y-3">
+                    <h4 class="font-serif font-bold text-white text-lg">Top Categories</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><button onclick="navigateTo('catalog', 'Fiction')" class="hover:text-brand-500 transition-colors">Fiction & Literature</button></li>
+                        <li><button onclick="navigateTo('catalog', 'Self-Help')" class="hover:text-brand-500 transition-colors">Self-Help & Mindset</button></li>
+                        <li><button onclick="navigateTo('catalog', 'Fantasy')" class="hover:text-brand-500 transition-colors">Mythology & Fantasy</button></li>
+                        <li><button onclick="navigateTo('catalog', 'Biography')" class="hover:text-brand-500 transition-colors">Biographies & Memoirs</button></li>
+                        <li><button onclick="navigateTo('catalog', 'Science & Technology')" class="hover:text-brand-500 transition-colors">Science & Technology</button></li>
+                    </ul>
+                </div>
+
+                <!-- Customer Support & Contact -->
+                <div class="lg:col-span-3 space-y-3">
+                    <h4 class="font-serif font-bold text-white text-lg">Customer Support</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><button onclick="navigateTo('contact')" class="hover:text-brand-500 transition-colors">Contact Us</button></li>
+                        <li><button onclick="openAuthModal('login')" class="hover:text-brand-500 transition-colors">My Account & Orders</button></li>
+                        <li><button onclick="toggleCartDrawer()" class="hover:text-brand-500 transition-colors">Shopping Cart</button></li>
+                        <li class="pt-2 text-xs text-beige-300/70">
+                            <i class="fa-solid fa-headset text-brand-500 mr-1.5"></i> Mon - Sat: 9:00 AM - 8:00 PM IST
+                        </li>
+                        <li class="text-xs text-beige-300/70">
+                            <i class="fa-solid fa-envelope text-brand-500 mr-1.5"></i> support@luminarybooks.in
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-brown-800/80 mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-beige-300/60">
+                <p>&copy; 2026 Luminary Books Pvt. Ltd. All rights reserved.</p>
+                <div class="flex items-center gap-4">
+                    <span>UPI</span>
+                    <span>•</span>
+                    <span>RuPay</span>
+                    <span>•</span>
+                    <span>Visa / Mastercard</span>
+                    <span>•</span>
+                    <span>Cash on Delivery</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ==================== 8. SHOPPING CART SLIDE-OVER DRAWER ==================== -->
+    <div id="cart-drawer-overlay" class="fixed inset-0 z-50 hidden">
+        <div onclick="toggleCartDrawer()" class="absolute inset-0 bg-brown-950/60 backdrop-blur-xs transition-opacity"></div>
+        <div class="absolute right-0 top-0 bottom-0 w-full max-w-md bg-beige-50 shadow-2xl flex flex-col animate-drawer">
+            <!-- Cart Header -->
+            <div class="px-6 py-5 bg-white border-b border-beige-200 flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <i class="fa-solid fa-bag-shopping text-brand-500 text-lg"></i>
+                    <h3 class="font-serif font-bold text-xl text-brown-900">Your Book Bag</h3>
+                    <span id="drawer-cart-count" class="px-2 py-0.5 rounded-full bg-beige-200 text-brown-900 text-xs font-bold">0</span>
+                </div>
+                <button onclick="toggleCartDrawer()" class="p-2 rounded-full hover:bg-beige-100 text-brown-700">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Cart Items List -->
+            <div id="cart-items-container" class="flex-1 overflow-y-auto p-6 space-y-4">
+                <!-- Populated dynamically via JS -->
+            </div>
+
+            <!-- Cart Footer & Totals -->
+            <div id="cart-footer" class="p-6 bg-white border-t border-beige-200 space-y-4">
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between text-brown-700">
+                        <span>Subtotal</span>
+                        <span id="cart-subtotal" class="font-semibold text-brown-900">₹0</span>
+                    </div>
+                    <div class="flex justify-between text-brown-700">
+                        <span>Shipping</span>
+                        <span id="cart-shipping" class="font-semibold text-emerald-700">FREE</span>
+                    </div>
+                    <div id="cart-b2g1-row" class="hidden flex justify-between text-brand-600 font-semibold">
+                        <span><i class="fa-solid fa-gift mr-1"></i> Buy 2 Get 1 Free Discount</span>
+                        <span id="cart-b2g1-amount">-₹0</span>
+                    </div>
+                    <div class="border-t border-beige-200 pt-2 flex justify-between text-base font-bold text-brown-900">
+                        <span>Total Payable</span>
+                        <span id="cart-total" class="text-xl text-brand-600">₹0</span>
+                    </div>
+                </div>
+                <button onclick="proceedToCheckout()" class="w-full py-3.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-bold text-sm transition-all shadow-lg flex items-center justify-center gap-2">
+                    <span>Proceed to Checkout</span>
+                    <i class="fa-solid fa-lock text-xs"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== WISHLIST DRAWER ==================== -->
+    <div id="wishlist-drawer-overlay" class="fixed inset-0 z-50 hidden">
+        <div onclick="toggleWishlistDrawer()" class="absolute inset-0 bg-brown-950/60 backdrop-blur-xs"></div>
+        <div class="absolute right-0 top-0 bottom-0 w-full max-w-md bg-beige-50 shadow-2xl flex flex-col animate-drawer">
+            <div class="px-6 py-5 bg-white border-b border-beige-200 flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <i class="fa-solid fa-heart text-brand-500 text-lg"></i>
+                    <h3 class="font-serif font-bold text-xl text-brown-900">Saved Wishlist</h3>
+                </div>
+                <button onclick="toggleWishlistDrawer()" class="p-2 rounded-full hover:bg-beige-100 text-brown-700">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <div id="wishlist-items-container" class="flex-1 overflow-y-auto p-6 space-y-4">
+                <!-- Populated via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== 10. LOGIN / SIGN UP MODAL ==================== -->
+    <div id="auth-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+        <div onclick="closeAuthModal()" class="absolute inset-0 bg-brown-950/65 backdrop-blur-xs"></div>
+        <div class="relative bg-white rounded-3xl max-w-md w-full p-7 sm:p-8 shadow-2xl border border-beige-200 z-10">
+            <button onclick="closeAuthModal()" class="absolute top-5 right-5 p-2 rounded-full hover:bg-beige-100 text-brown-700">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            
+            <div class="text-center mb-6">
+                <div class="w-12 h-12 rounded-2xl bg-brand-500/10 text-brand-600 flex items-center justify-center mx-auto mb-3 text-xl">
+                    <i class="fa-solid fa-book-open-reader"></i>
+                </div>
+                <h3 id="auth-modal-title" class="font-serif text-2xl font-bold text-brown-900">Welcome Back Reader</h3>
+                <p id="auth-modal-subtitle" class="text-xs text-brown-700 mt-1">Sign in to access your wishlist and order history</p>
+            </div>
+
+            <!-- Tabs -->
+            <div class="grid grid-cols-2 bg-beige-100 p-1 rounded-xl mb-5 text-sm font-semibold">
+                <button id="tab-login" onclick="switchAuthTab('login')" class="py-2 rounded-lg bg-white text-brown-900 shadow-xs transition-all">Sign In</button>
+                <button id="tab-signup" onclick="switchAuthTab('signup')" class="py-2 rounded-lg text-brown-700 hover:text-brown-900 transition-all">Create Account</button>
+            </div>
+
+            <form onsubmit="handleAuthSubmit(event)" class="space-y-4">
+                <div id="signup-name-field" class="hidden">
+                    <label class="block text-xs font-bold uppercase text-brown-800 mb-1">Full Name</label>
+                    <input type="text" id="auth-name" placeholder="Aarav Patel" class="w-full px-4 py-2.5 rounded-xl bg-beige-50 border border-beige-300 text-sm focus:outline-none focus:border-brand-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-brown-800 mb-1">Email Address</label>
+                    <input type="email" id="auth-email" required placeholder="reader@luminarybooks.in" class="w-full px-4 py-2.5 rounded-xl bg-beige-50 border border-beige-300 text-sm focus:outline-none focus:border-brand-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-brown-800 mb-1">Password</label>
+                    <input type="password" id="auth-password" required placeholder="••••••••" class="w-full px-4 py-2.5 rounded-xl bg-beige-50 border border-beige-300 text-sm focus:outline-none focus:border-brand-500">
+                </div>
+                <button type="submit" id="auth-submit-btn" class="w-full py-3 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-bold text-sm transition-colors shadow-md">
+                    Sign In
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==================== CHECKOUT SUCCESS MODAL ==================== -->
+    <div id="checkout-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+        <div onclick="closeCheckoutModal()" class="absolute inset-0 bg-brown-950/65 backdrop-blur-xs"></div>
+        <div class="relative bg-white rounded-3xl max-w-md w-full p-8 text-center shadow-2xl z-10 space-y-4">
+            <div class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto text-3xl">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <h3 class="font-serif text-2xl font-bold text-brown-900">Order Confirmed!</h3>
+            <p class="text-sm text-brown-700 leading-relaxed">Thank you for shopping with <strong>Luminary Books</strong>! Your order <span id="order-id-display" class="font-mono font-bold text-brand-600">#LUM-8492</span> has been placed and will be dispatched within 24 hours.</p>
+            <div class="bg-beige-100 p-3 rounded-xl text-xs text-brown-800 font-medium">
+                Estimated Delivery: 2–4 Business Days across India
+            </div>
+            <button onclick="closeCheckoutModal()" class="w-full py-3 rounded-xl bg-brown-900 hover:bg-brown-800 text-white font-bold text-sm transition-colors">
+                Continue Exploring Books
+            </button>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- ==================== JAVASCRIPT APPLICATION LOGIC ==================== -->
+    <script>
+        // 1. CATEGORIES DATA (All 12 Required Categories)
+        const CATEGORIES = [
+            { name: "Fiction", icon: "fa-feather-pointed", color: "bg-amber-100 text-amber-800" },
+            { name: "Non-Fiction", icon: "fa-compass", color: "bg-stone-200 text-stone-800" },
+            { name: "Science & Technology", icon: "fa-atom", color: "bg-sky-100 text-sky-800" },
+            { name: "Mystery & Thriller", icon: "fa-user-secret", color: "bg-slate-200 text-slate-800" },
+            { name: "Romance", icon: "fa-heart", color: "bg-rose-100 text-rose-800" },
+            { name: "Fantasy", icon: "fa-wand-sparkles", color: "bg-purple-100 text-purple-800" },
+            { name: "Self-Help", icon: "fa-seedling", color: "bg-emerald-100 text-emerald-800" },
+            { name: "Biography", icon: "fa-user-tie", color: "bg-orange-100 text-orange-800" },
+            { name: "History", icon: "fa-landmark", color: "bg-yellow-100 text-yellow-800" },
+            { name: "Children's Books", icon: "fa-rocket", color: "bg-teal-100 text-teal-800" },
+            { name: "Educational Books", icon: "fa-graduation-cap", color: "bg-indigo-100 text-indigo-800" },
+            { name: "Comics & Graphic Novels", icon: "fa-mask", color: "bg-red-100 text-red-800" }
+        ];
+
+        // 2. REAL BOOKS DATASET (With Reliable OpenLibrary Covers & Realistic ₹ Prices)
+        const BOOKS = [
+            {
+                id: 1,
+                title: "Atomic Habits",
+                author: "James Clear",
+                category: "Self-Help",
+                rating: 4.9,
+                reviewsCount: 4280,
+                originalPrice: 799,
+                price: 449,
+                featured: true,
+                bestseller: true,
+                publisher: "Penguin Random House",
+                year: 2018,
+                isbn: "9780735211292",
+                cover: "https://covers.openlibrary.org/b/isbn/9780735211292-L.jpg",
+                description: "No matter your goals, Atomic Habits offers a proven framework for improving every day. James Clear reveals practical strategies that will teach you exactly how to form good habits, break bad ones, and master the tiny behaviors that lead to remarkable results.",
+                reviews: [
+                    { user: "Vikramaditya S.", rating: 5, comment: "Life-changing framework. Practical and easy to apply immediately." },
+                    { user: "Meera Nair", rating: 5, comment: "Every chapter has actionable takeaways. Must-read!" }
+                ]
+            },
+            {
+                id: 2,
+                title: "Harry Potter and the Philosopher's Stone",
+                author: "J.K. Rowling",
+                category: "Fantasy",
+                rating: 4.9,
+                reviewsCount: 8920,
+                originalPrice: 599,
+                price: 349,
+                featured: true,
+                bestseller: true,
+                publisher: "Bloomsbury India",
+                year: 1997,
+                isbn: "9781408855652",
+                cover: "https://covers.openlibrary.org/b/isbn/9781408855652-L.jpg",
+                description: "Harry Potter has never even heard of Hogwarts when the letters start dropping on the doormat at number four, Privet Drive. Addressed in green ink on yellowish parchment with a purple seal, they are swiftly confiscated by his grisly aunt and uncle.",
+                reviews: [
+                    { user: "Riya Kapoor", rating: 5, comment: "Pure magic from the first page to the last. Nostalgic perfection." }
+                ]
+            },
+            {
+                id: 3,
+                title: "Wings of Fire: An Autobiography",
+                author: "A.P.J. Abdul Kalam",
+                category: "Biography",
+                rating: 4.9,
+                reviewsCount: 6510,
+                originalPrice: 450,
+                price: 265,
+                featured: true,
+                bestseller: true,
+                publisher: "Universities Press",
+                year: 1999,
+                isbn: "9788173711466",
+                cover: "https://covers.openlibrary.org/b/isbn/9788173711466-L.jpg",
+                description: "Every common man who by his sheer grit and hard work achieves success should share his story with the rest for they may find inspiration and strength to go on, in his story. The 'Wings of Fire' is one such autobiography by visionary scientist Dr. APJ Abdul Kalam.",
+                reviews: [
+                    { user: "Siddharth Rao", rating: 5, comment: "An inspiring journey from Rameswaram to Rashtrapati Bhavan." }
+                ]
+            },
+            {
+                id: 4,
+                title: "The Immortals of Meluha",
+                author: "Amish Tripathi",
+                category: "Fantasy",
+                rating: 4.7,
+                reviewsCount: 5120,
+                originalPrice: 499,
+                price: 295,
+                featured: true,
+                bestseller: false,
+                publisher: "Westland Publications",
+                year: 2010,
+                isbn: "9789380658742",
+                cover: "https://covers.openlibrary.org/b/isbn/9789380658742-L.jpg",
+                description: "1900 BC. In what modern Indians mistakenly call the Indus Valley Civilisation, the inhabitants of that period called it the land of Meluha — a near perfect empire created many centuries earlier by Lord Ram.",
+                reviews: [
+                    { user: "Nikhil Joshi", rating: 5, comment: "Brilliant reimagining of Indian mythology with gripping pacing." }
+                ]
+            },
+            {
+                id: 5,
+                title: "The Alchemist",
+                author: "Paulo Coelho",
+                category: "Fiction",
+                rating: 4.8,
+                reviewsCount: 7340,
+                originalPrice: 399,
+                price: 239,
+                featured: false,
+                bestseller: true,
+                publisher: "HarperCollins India",
+                year: 1988,
+                isbn: "9780062315007",
+                cover: "https://covers.openlibrary.org/b/isbn/9780062315007-L.jpg",
+                description: "Paulo Coelho's masterpiece tells the mystical story of Santiago, an Andalusian shepherd boy who yearns to travel in search of a worldly treasure. His quest will lead him to riches far different—and far more satisfying—than he ever imagined.",
+                reviews: [
+                    { user: "Sneha Menon", rating: 5, comment: "A poetic reminder to always follow your Personal Legend." }
+                ]
+            },
+            {
+                id: 6,
+                title: "1984",
+                author: "George Orwell",
+                category: "Fiction",
+                rating: 4.8,
+                reviewsCount: 6180,
+                originalPrice: 350,
+                price: 189,
+                featured: false,
+                bestseller: true,
+                publisher: "Penguin Classics",
+                year: 1949,
+                isbn: "9780451524935",
+                cover: "https://covers.openlibrary.org/b/isbn/9780451524935-L.jpg",
+                description: "Written more than 70 years ago, 1984 was George Orwell's chilling prophecy about the future. And while 1984 has come and gone, his dystopian vision of a government that will do anything to control the narrative is timelier than ever.",
+                reviews: [
+                    { user: "Arjun Malhotra", rating: 5, comment: "Chilling, profound, and timeless." }
+                ]
+            },
+            {
+                id: 7,
+                title: "Malgudi Days",
+                author: "R.K. Narayan",
+                category: "Fiction",
+                rating: 4.8,
+                reviewsCount: 3890,
+                originalPrice: 350,
+                price: 225,
+                featured: true,
+                bestseller: false,
+                publisher: "Indian Thought Publications",
+                year: 1943,
+                isbn: "9788185986173",
+                cover: "https://covers.openlibrary.org/b/isbn/9788185986173-L.jpg",
+                description: "Fourteen stories of life in the fictional South Indian town of Malgudi, capturing the humor, warmth, eccentricities, and everyday struggles of ordinary people with unmatched charm.",
+                reviews: [
+                    { user: "Deepa Krishnan", rating: 5, comment: "Takes me straight back to childhood afternoons." }
+                ]
+            },
+            {
+                id: 8,
+                title: "The Blue Umbrella",
+                author: "Ruskin Bond",
+                category: "Children's Books",
+                rating: 4.7,
+                reviewsCount: 2940,
+                originalPrice: 250,
+                price: 160,
+                featured: false,
+                bestseller: true,
+                publisher: "Rupa Publications",
+                year: 1980,
+                isbn: "9788171673407",
+                cover: "https://covers.openlibrary.org/b/isbn/9788171673407-L.jpg",
+                description: "In a small village in Garhwal, little Binya trades her leopard-claw pendant for a dainty frilled blue silk umbrella, sparking envy and heartwarming kindness across the hills.",
+                reviews: [
+                    { user: "Kavita Deshmukh", rating: 5, comment: "Ruskin Bond's mountain magic at its finest." }
+                ]
+            },
+            {
+                id: 9,
+                title: "2 States: The Story of My Marriage",
+                author: "Chetan Bhagat",
+                category: "Romance",
+                rating: 4.5,
+                reviewsCount: 4720,
+                originalPrice: 299,
+                price: 199,
+                featured: false,
+                bestseller: false,
+                publisher: "Rupa Publications",
+                year: 2009,
+                isbn: "9788129115300",
+                cover: "https://covers.openlibrary.org/b/isbn/9788129115300-L.jpg",
+                description: "Love marriages around the world are simple: Boy loves girl. Girl loves boy. They get married. In India, there are a few more steps: Boy's family has to love girl's family...",
+                reviews: [
+                    { user: "Pooja Verma", rating: 4, comment: "Witty, relatable, and a breezy weekend read!" }
+                ]
+            },
+            {
+                id: 10,
+                title: "Sapiens: A Brief History of Humankind",
+                author: "Yuval Noah Harari",
+                category: "History",
+                rating: 4.8,
+                reviewsCount: 5890,
+                originalPrice: 699,
+                price: 419,
+                featured: true,
+                bestseller: true,
+                publisher: "Vintage Books",
+                year: 2014,
+                isbn: "9780062316097",
+                cover: "https://covers.openlibrary.org/b/isbn/9780062316097-L.jpg",
+                description: "From a renowned historian comes a groundbreaking narrative of humanity's creation and evolution that explores the ways in which biology and history have defined us.",
+                reviews: [
+                    { user: "Devansh Kulkarni", rating: 5, comment: "Completely changes how you view human society and history." }
+                ]
+            },
+            {
+                id: 11,
+                title: "The Silent Patient",
+                author: "Alex Michaelides",
+                category: "Mystery & Thriller",
+                rating: 4.7,
+                reviewsCount: 4110,
+                originalPrice: 499,
+                price: 279,
+                featured: true,
+                bestseller: false,
+                publisher: "Orion Publishing",
+                year: 2019,
+                isbn: "9781250301697",
+                cover: "https://covers.openlibrary.org/b/isbn/9781250301697-L.jpg",
+                description: "Alicia Berenson's life is seemingly perfect. One evening her husband Gabriel returns home late from a fashion shoot, and Alicia shoots him five times in the face, and then never speaks another word.",
+                reviews: [
+                    { user: "Tanvi Shah", rating: 5, comment: "That plot twist left my jaw on the floor!" }
+                ]
+            },
+            {
+                id: 12,
+                title: "A Brief History of Time",
+                author: "Stephen Hawking",
+                category: "Science & Technology",
+                rating: 4.8,
+                reviewsCount: 3980,
+                originalPrice: 499,
+                price: 299,
+                featured: true,
+                bestseller: false,
+                publisher: "Bantam Books",
+                year: 1988,
+                isbn: "9780553380163",
+                cover: "https://covers.openlibrary.org/b/isbn/9780553380163-L.jpg",
+                description: "A landmark volume in science writing by one of the great minds of our time, exploring black holes, the Big Bang, relativity, and the nature of space and time.",
+                reviews: [
+                    { user: "Pranav Iyer", rating: 5, comment: "Makes complex cosmology accessible and awe-inspiring." }
+                ]
+            },
+            {
+                id: 13,
+                title: "The Psychology of Money",
+                author: "Morgan Housel",
+                category: "Non-Fiction",
+                rating: 4.8,
+                reviewsCount: 5400,
+                originalPrice: 499,
+                price: 289,
+                featured: false,
+                bestseller: true,
+                publisher: "Jaico Publishing House",
+                year: 2020,
+                isbn: "9789390166268",
+                cover: "https://covers.openlibrary.org/b/isbn/9789390166268-L.jpg",
+                description: "Timeless lessons on wealth, greed, and happiness doing well with money isn't necessarily about what you know. It's about how you behave.",
+                reviews: [
+                    { user: "Rakesh Gupta", rating: 5, comment: "Essential financial wisdom written in simple stories." }
+                ]
+            },
+            {
+                id: 14,
+                title: "Concepts of Physics (Vol. 1)",
+                author: "H.C. Verma",
+                category: "Educational Books",
+                rating: 4.9,
+                reviewsCount: 9200,
+                originalPrice: 540,
+                price: 430,
+                featured: false,
+                bestseller: false,
+                publisher: "Bharati Bhawan",
+                year: 2022,
+                isbn: "9788177091878",
+                cover: "https://covers.openlibrary.org/b/isbn/9788177091878-L.jpg",
+                description: "The gold standard textbook for Indian high school and engineering entrance students, renowned for crystal-clear explanations and thought-provoking numericals.",
+                reviews: [
+                    { user: "Aditya Mishra", rating: 5, comment: "Every JEE aspirant's bible. Crisp print quality." }
+                ]
+            },
+            {
+                id: 15,
+                title: "Maus: A Survivor's Tale",
+                author: "Art Spiegelman",
+                category: "Comics & Graphic Novels",
+                rating: 4.9,
+                reviewsCount: 3150,
+                originalPrice: 899,
+                price: 599,
+                featured: false,
+                bestseller: false,
+                publisher: "Penguin Graphic",
+                year: 1991,
+                isbn: "9780141014081",
+                cover: "https://covers.openlibrary.org/b/isbn/9780141014081-L.jpg",
+                description: "The Pulitzer Prize-winning graphic novel masterpiece that portrays the Holocaust with profound emotional depth and visual storytelling.",
+                reviews: [
+                    { user: "Zoya Khan", rating: 5, comment: "Proves graphic novels can stand alongside the greatest literature." }
+                ]
+            }
+        ];
+
+        // 3. POPULAR AUTHORS DATA (All 8 Requested Authors)
+        const AUTHORS = [
+            {
+                name: "J.K. Rowling",
+                genre: "Fantasy & Young Adult",
+                famousBook: "Harry Potter Series",
+                booksCount: "15+ Books",
+                photo: "https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=400&q=80"
+            },
+            {
+                name: "George Orwell",
+                genre: "Dystopian & Political Fiction",
+                famousBook: "1984 & Animal Farm",
+                booksCount: "9 Books",
+                photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80"
+            },
+            {
+                name: "Paulo Coelho",
+                genre: "Philosophical Fiction",
+                famousBook: "The Alchemist",
+                booksCount: "30+ Books",
+                photo: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=400&q=80"
+            },
+            {
+                name: "Chetan Bhagat",
+                genre: "Contemporary Indian Fiction",
+                famousBook: "2 States & Five Point Someone",
+                booksCount: "14 Books",
+                photo: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=400&q=80"
+            },
+            {
+                name: "R.K. Narayan",
+                genre: "Classic Indian Literature",
+                famousBook: "Malgudi Days & The Guide",
+                booksCount: "34 Books",
+                photo: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80"
+            },
+            {
+                name: "Ruskin Bond",
+                genre: "Nature & Children's Fiction",
+                famousBook: "The Blue Umbrella & Room on the Roof",
+                booksCount: "100+ Books",
+                photo: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=400&q=80"
+            },
+            {
+                name: "Amish Tripathi",
+                genre: "Mythological Fiction",
+                famousBook: "The Immortals of Meluha",
+                booksCount: "12 Books",
+                photo: "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=400&q=80"
+            },
+            {
+                name: "A.P.J. Abdul Kalam",
+                genre: "Biography & Visionary Science",
+                famousBook: "Wings of Fire & Ignited Minds",
+                booksCount: "25+ Books",
+                photo: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80"
+            }
+        ];
+
+        // ==================== STATE MANAGEMENT (LocalStorage) ====================
+        let cart = JSON.parse(localStorage.getItem('luminary_cart')) || [];
+        let wishlist = JSON.parse(localStorage.getItem('luminary_wishlist')) || [];
+        let recentlyViewed = JSON.parse(localStorage.getItem('luminary_recent')) || [];
+        let currentUser = JSON.parse(localStorage.getItem('luminary_user')) || null;
+        let selectedCategory = 'All';
+        let authMode = 'login';
+
+        function saveState() {
+            localStorage.setItem('luminary_cart', JSON.stringify(cart));
+            localStorage.setItem('luminary_wishlist', JSON.stringify(wishlist));
+            localStorage.setItem('luminary_recent', JSON.stringify(recentlyViewed));
+            updateBadges();
+        }
+
+        // ==================== INITIALIZATION ====================
+        document.addEventListener('DOMContentLoaded', () => {
+            renderCategories();
+            renderBookGrid(BOOKS.filter(b => b.featured).slice(0, 8), 'featured-books-grid');
+            renderBookGrid(BOOKS.filter(b => b.bestseller).slice(0, 8), 'bestselling-books-grid');
+            renderAuthors();
+            renderRecentlyViewed();
+            updateBadges();
+            updateAuthUI();
+        });
+
+        // ==================== RENDERING COMPONENTS ====================
+        function getDiscountPercent(orig, curr) {
+            return Math.round(((orig - curr) / orig) * 100);
+        }
+
+        function renderStars(rating) {
+            const full = Math.floor(rating);
+            let html = '';
+            for (let i = 0; i < 5; i++) {
+                if (i < full) {
+                    html += '<i class="fa-solid fa-star text-amber-500"></i>';
+                } else {
+                    html += '<i class="fa-solid fa-star-half-stroke text-amber-500"></i>';
+                }
+            }
+            return html;
+        }
+
+        function createBookCardHTML(book) {
+            const discount = getDiscountPercent(book.originalPrice, book.price);
+            const isWishlisted = wishlist.includes(book.id);
+            const fallbackUrl = `https://placehold.co/300x450/42291E/FDFBF7?text=${encodeURIComponent(book.title)}`;
+
+            return `
+                <div class="book-card bg-white rounded-2xl border border-beige-200/90 p-4 flex flex-col justify-between shadow-xs hover:shadow-xl transition-all duration-300 group relative">
+                    <!-- Top Badges -->
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-1.5">
+                            <span class="px-2.5 py-0.5 rounded-full bg-brand-500/10 text-brand-600 text-[11px] font-bold">
+                                ${discount}% OFF
+                            </span>
+                            ${book.bestseller ? `<span class="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[10px] font-bold uppercase tracking-wider">Bestseller</span>` : ''}
+                        </div>
+                        <button onclick="toggleWishlist(${book.id}, event)" aria-label="Add to Wishlist" 
+                                class="w-8 h-8 rounded-full bg-beige-50 hover:bg-rose-50 flex items-center justify-center transition-colors ${isWishlisted ? 'text-rose-500' : 'text-brown-700/60 hover:text-rose-500'}">
+                            <i class="${isWishlisted ? 'fa-solid' : 'fa-regular'} fa-heart text-sm"></i>
+                        </button>
+                    </div>
+
+                    <!-- Book Cover -->
+                    <div onclick="openBookDetails(${book.id})" class="cursor-pointer mx-auto my-2 w-40 h-56 sm:w-44 sm:h-60 rounded-lg overflow-hidden bg-beige-100 book-card-cover relative">
+                        <img src="${book.cover}" onerror="this.src='${fallbackUrl}'" alt="${book.title}" class="w-full h-full object-cover">
+                    </div>
+
+                    <!-- Book Info -->
+                    <div class="pt-4 space-y-1.5 flex-1 flex flex-col justify-between">
+                        <div>
+                            <span class="text-[11px] font-semibold text-brand-600 uppercase tracking-wider">${book.category}</span>
+                            <h3 onclick="openBookDetails(${book.id})" class="cursor-pointer font-serif font-bold text-lg text-brown-900 leading-snug line-clamp-1 group-hover:text-brand-600 transition-colors" title="${book.title}">
+                                ${book.title}
+                            </h3>
+                            <p class="text-xs text-brown-700 font-medium">by ${book.author}</p>
+                        </div>
+
+                        <!-- Rating -->
+                        <div class="flex items-center gap-1.5 text-xs pt-1">
+                            <div class="flex items-center gap-0.5">${renderStars(book.rating)}</div>
+                            <span class="font-bold text-brown-900">${book.rating}</span>
+                            <span class="text-brown-700/70">(${book.reviewsCount.toLocaleString('en-IN')})</span>
+                        </div>
+
+                        <!-- Pricing -->
+                        <div class="flex items-baseline gap-2 pt-1">
+                            <span class="text-xl font-bold text-brown-900">₹${book.price}</span>
+                            <span class="text-xs text-brown-700/60 line-through">₹${book.originalPrice}</span>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="grid grid-cols-2 gap-2 pt-3">
+                            <button onclick="addToCart(${book.id})" class="px-3 py-2.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 shadow-xs">
+                                <i class="fa-solid fa-cart-plus"></i> Add to Cart
+                            </button>
+                            <button onclick="openBookDetails(${book.id})" class="px-3 py-2.5 rounded-xl bg-beige-100 hover:bg-brown-900 text-brown-900 hover:text-white font-semibold text-xs transition-colors">
+                                View Details
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderBookGrid(bookList, containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            if (bookList.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-14 bg-white rounded-3xl border border-beige-200">
+                        <i class="fa-solid fa-book-open text-4xl text-beige-300 mb-3"></i>
+                        <h3 class="font-serif text-xl font-bold text-brown-900">No books matched your filters</h3>
+                        <p class="text-sm text-brown-700 mt-1">Try resetting your category or price filters to discover more reads.</p>
+                        <button onclick="resetCatalogFilters()" class="mt-4 px-5 py-2.5 rounded-full bg-brand-500 text-white text-sm font-semibold">Reset Filters</button>
+                    </div>
+                `;
+                return;
+            }
+            container.innerHTML = bookList.map(createBookCardHTML).join('');
+        }
+
+        function renderCategories() {
+            const grid = document.getElementById('categories-grid');
+            grid.innerHTML = CATEGORIES.map(cat => `
+                <button onclick="navigateTo('catalog', '${cat.name.replace(/'/g, "\\'")}')" 
+                        class="group bg-white hover:bg-brown-900 p-4 rounded-2xl border border-beige-200 shadow-xs hover:shadow-lg transition-all text-left flex flex-col justify-between gap-3">
+                    <div class="w-11 h-11 rounded-xl ${cat.color} group-hover:bg-brand-500 group-hover:text-white flex items-center justify-center text-lg transition-colors">
+                        <i class="fa-solid ${cat.icon}"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-sm text-brown-900 group-hover:text-white transition-colors leading-snug">${cat.name}</h3>
+                        <span class="text-[11px] text-brown-700/70 group-hover:text-beige-200 transition-colors">Explore &rarr;</span>
+                    </div>
+                </button>
+            `).join('');
+        }
+
+        function renderAuthors() {
+            const grid = document.getElementById('authors-grid');
+            grid.innerHTML = AUTHORS.map(author => `
+                <div onclick="filterByAuthor('${author.name.replace(/'/g, "\\'")}')" 
+                     class="cursor-pointer bg-white rounded-2xl p-5 border border-beige-200 hover:border-brand-500 shadow-xs hover:shadow-xl transition-all group flex items-center gap-4">
+                    <img src="${author.photo}" 
+                         onerror="this.src='https://placehold.co/150x150/42291E/FDFBF7?text=${encodeURIComponent(author.name.charAt(0))}'" 
+                         alt="${author.name}" class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover shrink-0 border-2 border-beige-200 group-hover:scale-105 transition-transform">
+                    <div class="min-w-0">
+                        <h3 class="font-serif font-bold text-lg text-brown-900 group-hover:text-brand-600 transition-colors truncate">${author.name}</h3>
+                        <p class="text-xs text-brand-600 font-semibold truncate">${author.genre}</p>
+                        <p class="text-xs text-brown-700 mt-1 line-clamp-1"><strong class="text-brown-900">Famous:</strong> ${author.famousBook}</p>
+                        <span class="inline-block mt-1.5 text-[11px] font-bold text-brown-700/80 bg-beige-100 px-2 py-0.5 rounded-md">${author.booksCount}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ==================== NAVIGATION & VIEWS ====================
+        function navigateTo(viewName, category = null, specialFilter = null) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+            const target = document.getElementById(`view-${viewName}`);
+            if (target) target.classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            if (viewName === 'catalog') {
+                setupCatalogSidebar();
+                if (category) {
+                    selectedCategory = category;
+                }
+                document.getElementById('filter-bestseller').checked = (specialFilter === 'bestseller');
+                document.getElementById('filter-discount').checked = (specialFilter === 'discount');
+                if (specialFilter === 'under299') {
+                    document.getElementById('catalog-price-range').value = 299;
+                    updatePriceLabel(299);
+                } else {
+                    document.getElementById('catalog-price-range').value = 1500;
+                    updatePriceLabel(1500);
+                }
+                applyCatalogFilters();
+            }
+        }
+
+        function scrollToSection(sectionId) {
+            const homeView = document.getElementById('view-home');
+            if (homeView.classList.contains('hidden')) {
+                navigateTo('home');
+                setTimeout(() => {
+                    document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+            } else {
+                document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function toggleMobileMenu() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        }
+
+        // ==================== SEARCH & CATALOG FILTERING ====================
+        function handleHeroSearch(e) {
+            e.preventDefault();
+            const q = document.getElementById('hero-search-input').value.trim();
+            navigateTo('catalog', 'All');
+            document.getElementById('catalog-search').value = q;
+            applyCatalogFilters();
+        }
+
+        function handleQuickSearch(val) {
+            if (val.trim().length > 1) {
+                navigateTo('catalog', 'All');
+                document.getElementById('catalog-search').value = val;
+                applyCatalogFilters();
+            }
+        }
+
+        function filterByAuthor(authorName) {
+            navigateTo('catalog', 'All');
+            document.getElementById('catalog-search').value = authorName;
+            applyCatalogFilters();
+        }
+
+        function setupCatalogSidebar() {
+            const list = document.getElementById('catalog-category-list');
+            const allCats = ['All', ...CATEGORIES.map(c => c.name)];
+            list.innerHTML = allCats.map(cat => `
+                <button onclick="selectCatalogCategory('${cat.replace(/'/g, "\\'")}')" 
+                        class="w-full text-left px-3 py-2 rounded-xl text-sm font-medium transition-colors flex items-center justify-between ${selectedCategory === cat ? 'bg-brand-500 text-white font-bold' : 'text-brown-800 hover:bg-beige-100'}">
+                    <span>${cat}</span>
+                    ${selectedCategory === cat ? '<i class="fa-solid fa-check text-xs"></i>' : ''}
+                </button>
+            `).join('');
+        }
+
+        function selectCatalogCategory(cat) {
+            selectedCategory = cat;
+            setupCatalogSidebar();
+            applyCatalogFilters();
+        }
+
+        function updatePriceLabel(val) {
+            document.getElementById('price-range-label').textContent = `₹${Number(val).toLocaleString('en-IN')}`;
+        }
+
+        function resetCatalogFilters() {
+            selectedCategory = 'All';
+            document.getElementById('catalog-search').value = '';
+            document.getElementById('catalog-price-range').value = 1500;
+            updatePriceLabel(1500);
+            document.getElementById('filter-bestseller').checked = false;
+            document.getElementById('filter-discount').checked = false;
+            document.getElementById('catalog-sort').value = 'popularity';
+            setupCatalogSidebar();
+            applyCatalogFilters();
+        }
+
+        function applyCatalogFilters() {
+            setupCatalogSidebar();
+            const search = document.getElementById('catalog-search').value.toLowerCase().trim();
+            const maxPrice = Number(document.getElementById('catalog-price-range').value);
+            const onlyBestseller = document.getElementById('filter-bestseller').checked;
+            const onlyDiscount = document.getElementById('filter-discount').checked;
+            const sortBy = document.getElementById('catalog-sort').value;
+
+            let filtered = BOOKS.filter(book => {
+                const matchCat = selectedCategory === 'All' || book.category === selectedCategory;
+                const matchSearch = !search || 
+                    book.title.toLowerCase().includes(search) || 
+                    book.author.toLowerCase().includes(search) || 
+                    book.category.toLowerCase().includes(search) ||
+                    book.isbn.includes(search);
+                const matchPrice = book.price <= maxPrice;
+                const matchBest = !onlyBestseller || book.bestseller;
+                const matchDisc = !onlyDiscount || getDiscountPercent(book.originalPrice, book.price) >= 30;
+                return matchCat && matchSearch && matchPrice && matchBest && matchDisc;
+            });
+
+            // Sorting
+            if (sortBy === 'price-low') filtered.sort((a, b) => a.price - b.price);
+            else if (sortBy === 'price-high') filtered.sort((a, b) => b.price - a.price);
+            else if (sortBy === 'rating') filtered.sort((a, b) => b.rating - a.rating);
+            else if (sortBy === 'discount') filtered.sort((a, b) => getDiscountPercent(b.originalPrice, b.price) - getDiscountPercent(a.originalPrice, a.price));
+            else filtered.sort((a, b) => b.reviewsCount - a.reviewsCount);
+
+            document.getElementById('catalog-heading').textContent = selectedCategory === 'All' ? 'Explore All Books' : selectedCategory;
+            document.getElementById('catalog-count').textContent = filtered.length;
+            renderBookGrid(filtered, 'catalog-books-grid');
+        }
+
+        // ==================== 9. BOOK DETAILS PAGE ====================
+        function openBookDetails(bookId) {
+            const book = BOOKS.find(b => b.id === bookId);
+            if (!book) return;
+
+            // Track Recently Viewed
+            recentlyViewed = [bookId, ...recentlyViewed.filter(id => id !== bookId)].slice(0, 5);
+            saveState();
+            renderRecentlyViewed();
+
+            const discount = getDiscountPercent(book.originalPrice, book.price);
+            const isWishlisted = wishlist.includes(book.id);
+            const fallbackUrl = `https://placehold.co/400x600/42291E/FDFBF7?text=${encodeURIComponent(book.title)}`;
+
+            const container = document.getElementById('book-details-content');
+            container.innerHTML = `
+                <nav class="text-xs font-medium text-brown-700 mb-6 flex items-center gap-2">
+                    <button onclick="navigateTo('home')" class="hover:text-brand-600">Home</button>
+                    <span>/</span>
+                    <button onclick="navigateTo('catalog', '${book.category.replace(/'/g, "\\'")}')" class="hover:text-brand-600">${book.category}</button>
+                    <span>/</span>
+                    <span class="text-brown-900 font-semibold truncate">${book.title}</span>
+                </nav>
+
+                <div class="bg-white rounded-3xl border border-beige-200 p-6 sm:p-10 shadow-sm grid lg:grid-cols-12 gap-10">
+                    <!-- Left Large Cover -->
+                    <div class="lg:col-span-4 flex flex-col items-center">
+                        <div class="w-60 sm:w-72 rounded-2xl overflow-hidden shadow-2xl border border-beige-200 book-card-cover">
+                            <img src="${book.cover}" onerror="this.src='${fallbackUrl}'" alt="${book.title}" class="w-full h-auto object-cover">
+                        </div>
+                        <div class="mt-5 flex items-center gap-4 text-xs text-brown-700 font-medium">
+                            <span><i class="fa-solid fa-shield-halved text-emerald-600 mr-1"></i> 100% Authentic</span>
+                            <span><i class="fa-solid fa-rotate-left text-brand-500 mr-1"></i> 7-Day Replacement</span>
+                        </div>
+                    </div>
+
+                    <!-- Right Book Metadata & Actions -->
+                    <div class="lg:col-span-8 space-y-6">
+                        <div class="space-y-2">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span class="px-3 py-1 rounded-full bg-brand-500/10 text-brand-600 text-xs font-bold uppercase tracking-wider">${book.category}</span>
+                                ${book.bestseller ? '<span class="px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-bold">#1 Bestseller</span>' : ''}
+                            </div>
+                            <h1 class="font-serif text-3xl sm:text-4xl font-bold text-brown-900">${book.title}</h1>
+                            <p class="text-base text-brown-700">By <button onclick="filterByAuthor('${book.author.replace(/'/g, "\\'")}')" class="font-bold text-brand-600 hover:underline">${book.author}</button></p>
+                        </div>
+
+                        <!-- Ratings -->
+                        <div class="flex items-center gap-3 pb-4 border-b border-beige-200">
+                            <div class="flex items-center gap-1 text-sm">${renderStars(book.rating)}</div>
+                            <span class="font-bold text-brown-900">${book.rating} out of 5</span>
+                            <span class="text-sm text-brown-700">(${book.reviewsCount.toLocaleString('en-IN')} customer ratings)</span>
+                        </div>
+
+                        <!-- Price Box -->
+                        <div class="bg-beige-50 p-5 rounded-2xl border border-beige-200 flex flex-wrap items-center justify-between gap-4">
+                            <div>
+                                <div class="flex items-baseline gap-3">
+                                    <span class="text-3xl sm:text-4xl font-bold text-brown-900">₹${book.price}</span>
+                                    <span class="text-base text-brown-700/60 line-through">MRP ₹${book.originalPrice}</span>
+                                    <span class="px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-800 text-xs font-bold">Save ₹${book.originalPrice - book.price} (${discount}% OFF)</span>
+                                </div>
+                                <p class="text-xs text-brown-700 mt-1">Inclusive of all taxes • Eligible for Buy 2 Get 1 Free</p>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <button onclick="addToCart(${book.id})" class="px-7 py-3.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-bold text-sm transition-all shadow-lg flex items-center gap-2">
+                                    <i class="fa-solid fa-bag-shopping"></i> Add to Cart
+                                </button>
+                                <button onclick="toggleWishlist(${book.id}); openBookDetails(${book.id});" class="p-3.5 rounded-xl border border-beige-300 hover:bg-rose-50 transition-colors ${isWishlisted ? 'text-rose-500 border-rose-200 bg-rose-50' : 'text-brown-800'}">
+                                    <i class="${isWishlisted ? 'fa-solid' : 'fa-regular'} fa-heart text-lg"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="space-y-2">
+                            <h3 class="font-serif font-bold text-lg text-brown-900">About the Book</h3>
+                            <p class="text-brown-800 text-sm sm:text-base leading-relaxed">${book.description}</p>
+                        </div>
+
+                        <!-- Specifications Grid -->
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2">
+                            <div class="bg-beige-50 p-3.5 rounded-xl border border-beige-200/70">
+                                <span class="block text-[11px] uppercase text-brown-700 font-semibold">Publisher</span>
+                                <span class="font-bold text-xs sm:text-sm text-brown-900 mt-0.5 block">${book.publisher}</span>
+                            </div>
+                            <div class="bg-beige-50 p-3.5 rounded-xl border border-beige-200/70">
+                                <span class="block text-[11px] uppercase text-brown-700 font-semibold">Publication Year</span>
+                                <span class="font-bold text-xs sm:text-sm text-brown-900 mt-0.5 block">${book.year}</span>
+                            </div>
+                            <div class="bg-beige-50 p-3.5 rounded-xl border border-beige-200/70">
+                                <span class="block text-[11px] uppercase text-brown-700 font-semibold">ISBN-13</span>
+                                <span class="font-mono font-bold text-xs sm:text-sm text-brown-900 mt-0.5 block">${book.isbn}</span>
+                            </div>
+                            <div class="bg-beige-50 p-3.5 rounded-xl border border-beige-200/70">
+                                <span class="block text-[11px] uppercase text-brown-700 font-semibold">Format</span>
+                                <span class="font-bold text-xs sm:text-sm text-brown-900 mt-0.5 block">Paperback Edition</span>
+                            </div>
+                        </div>
+
+                        <!-- Customer Reviews Section -->
+                        <div class="pt-4 border-t border-beige-200 space-y-3">
+                            <h3 class="font-serif font-bold text-lg text-brown-900">Reader Reviews</h3>
+                            <div class="grid sm:grid-cols-2 gap-4">
+                                ${book.reviews.map(r => `
+                                    <div class="p-4 rounded-2xl bg-beige-50 border border-beige-200/80 space-y-1.5">
+                                        <div class="flex items-center justify-between">
+                                            <span class="font-bold text-sm text-brown-900">${r.user}</span>
+                                            <span class="text-xs text-amber-500">${'★'.repeat(r.rating)}</span>
+                                        </div>
+                                        <p class="text-xs text-brown-700 italic">"${r.comment}"</p>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Related Books (Same category or fallback)
+            let related = BOOKS.filter(b => b.category === book.category && b.id !== book.id);
+            if (related.length < 4) {
+                related = [...related, ...BOOKS.filter(b => b.id !== book.id && !related.includes(b))].slice(0, 4);
+            }
+            renderBookGrid(related, 'related-books-grid');
+            navigateTo('book-details');
+        }
+
+        function renderRecentlyViewed() {
+            const section = document.getElementById('recently-viewed-section');
+            const grid = document.getElementById('recently-viewed-grid');
+            if (recentlyViewed.length === 0) {
+                section.classList.add('hidden');
+                return;
+            }
+            section.classList.remove('hidden');
+            const books = recentlyViewed.map(id => BOOKS.find(b => b.id === id)).filter(Boolean);
+            grid.innerHTML = books.map(book => `
+                <div onclick="openBookDetails(${book.id})" class="cursor-pointer bg-white p-3 rounded-2xl border border-beige-200 hover:border-brand-500 transition-all flex items-center gap-3 shadow-xs">
+                    <img src="${book.cover}" onerror="this.src='https://placehold.co/100x150/42291E/FDFBF7?text=Book'" alt="${book.title}" class="w-12 h-16 object-cover rounded-lg shrink-0">
+                    <div class="min-w-0">
+                        <h4 class="font-serif font-bold text-sm text-brown-900 truncate">${book.title}</h4>
+                        <p class="text-xs text-brown-700 truncate">${book.author}</p>
+                        <p class="text-xs font-bold text-brand-600 mt-0.5">₹${book.price}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function clearRecentlyViewed() {
+            recentlyViewed = [];
+            saveState();
+            renderRecentlyViewed();
+        }
+
+        // ==================== 8. SHOPPING CART FUNCTIONALITY ====================
+        function addToCart(bookId) {
+            const existing = cart.find(item => item.id === bookId);
+            if (existing) {
+                existing.qty += 1;
+            } else {
+                cart.push({ id: bookId, qty: 1 });
+            }
+            saveState();
+            renderCartItems();
+            const book = BOOKS.find(b => b.id === bookId);
+            showToast(`Added "${book.title}" to your book bag!`);
+        }
+
+        function updateCartQty(bookId, delta) {
+            const idx = cart.findIndex(item => item.id === bookId);
+            if (idx === -1) return;
+            cart[idx].qty += delta;
+            if (cart[idx].qty <= 0) {
+                cart.splice(idx, 1);
+            }
+            saveState();
+            renderCartItems();
+        }
+
+        function removeFromCart(bookId) {
+            cart = cart.filter(item => item.id !== bookId);
+            saveState();
+            renderCartItems();
+            showToast('Removed item from cart.');
+        }
+
+        function toggleCartDrawer() {
+            const overlay = document.getElementById('cart-drawer-overlay');
+            overlay.classList.toggle('hidden');
+            if (!overlay.classList.contains('hidden')) {
+                renderCartItems();
+            }
+        }
+
+        function renderCartItems() {
+            const container = document.getElementById('cart-items-container');
+            const footer = document.getElementById('cart-footer');
+            const totalQty = cart.reduce((acc, item) => acc + item.qty, 0);
+            document.getElementById('drawer-cart-count').textContent = totalQty;
+
+            if (cart.length === 0) {
+                footer.classList.add('hidden');
+                container.innerHTML = `
+                    <div class="text-center py-16 space-y-4">
+                        <div class="w-16 h-16 rounded-full bg-beige-200/70 text-brown-700 flex items-center justify-center mx-auto text-2xl">
+                            <i class="fa-solid fa-bag-shopping"></i>
+                        </div>
+                        <h4 class="font-serif text-xl font-bold text-brown-900">Your book bag is empty</h4>
+                        <p class="text-sm text-brown-700 max-w-xs mx-auto">Looks like you haven't added any books yet. Explore our bestsellers and deals!</p>
+                        <button onclick="toggleCartDrawer(); navigateTo('catalog');" class="px-6 py-2.5 rounded-full bg-brand-500 text-white font-semibold text-sm">
+                            Browse Books
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            footer.classList.remove('hidden');
+            let subtotal = 0;
+            let unitPrices = [];
+
+            container.innerHTML = cart.map(item => {
+                const book = BOOKS.find(b => b.id === item.id);
+                if (!book) return '';
+                const lineTotal = book.price * item.qty;
+                subtotal += lineTotal;
+                for (let i = 0; i < item.qty; i++) unitPrices.push(book.price);
+
+                return `
+                    <div class="bg-white p-3.5 rounded-2xl border border-beige-200 flex gap-3.5 items-center shadow-2xs">
+                        <img src="${book.cover}" onerror="this.src='https://placehold.co/100x150/42291E/FDFBF7?text=Book'" alt="${book.title}" class="w-14 h-20 object-cover rounded-lg shrink-0">
+                        <div class="flex-1 min-w-0">
+                            <h4 class="font-serif font-bold text-sm text-brown-900 truncate">${book.title}</h4>
+                            <p class="text-xs text-brown-700 truncate">${book.author}</p>
+                            <div class="flex items-center justify-between mt-2">
+                                <span class="font-bold text-brand-600 text-sm">₹${lineTotal.toLocaleString('en-IN')}</span>
+                                <div class="flex items-center gap-2 bg-beige-100 rounded-lg p-1">
+                                    <button onclick="updateCartQty(${book.id}, -1)" class="w-6 h-6 rounded bg-white text-brown-900 hover:bg-brand-500 hover:text-white text-xs font-bold transition-colors">-</button>
+                                    <span class="text-xs font-bold px-1.5 text-brown-900">${item.qty}</span>
+                                    <button onclick="updateCartQty(${book.id}, 1)" class="w-6 h-6 rounded bg-white text-brown-900 hover:bg-brand-500 hover:text-white text-xs font-bold transition-colors">+</button>
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="removeFromCart(${book.id})" aria-label="Remove item" class="text-brown-700/50 hover:text-rose-600 p-1.5">
+                            <i class="fa-solid fa-trash-can text-sm"></i>
+                        </button>
+                    </div>
+                `;
+            }).join('');
+
+            // Calculate Buy 2 Get 1 Free Automatic Offer if >= 3 books
+            let b2g1Discount = 0;
+            const b2g1Row = document.getElementById('cart-b2g1-row');
+            if (unitPrices.length >= 3) {
+                unitPrices.sort((a, b) => a - b);
+                const freeBooksCount = Math.floor(unitPrices.length / 3);
+                for (let i = 0; i < freeBooksCount; i++) {
+                    b2g1Discount += unitPrices[i];
+                }
+                b2g1Row.classList.remove('hidden');
+                document.getElementById('cart-b2g1-amount').textContent = `-₹${b2g1Discount.toLocaleString('en-IN')}`;
+            } else {
+                b2g1Row.classList.add('hidden');
+            }
+
+            const afterDiscount = subtotal - b2g1Discount;
+            const shipping = afterDiscount >= 499 ? 0 : 49;
+            const total = afterDiscount + shipping;
+
+            document.getElementById('cart-subtotal').textContent = `₹${subtotal.toLocaleString('en-IN')}`;
+            document.getElementById('cart-shipping').textContent = shipping === 0 ? 'FREE' : `₹${shipping}`;
+            document.getElementById('cart-total').textContent = `₹${total.toLocaleString('en-IN')}`;
+        }
+
+        function proceedToCheckout() {
+            if (cart.length === 0) return;
+            toggleCartDrawer();
+            const randomOrderNum = Math.floor(1000 + Math.random() * 9000);
+            document.getElementById('order-id-display').textContent = `#LUM-${randomOrderNum}`;
+            document.getElementById('checkout-modal').classList.remove('hidden');
+            cart = [];
+            saveState();
+        }
+
+        function closeCheckoutModal() {
+            document.getElementById('checkout-modal').classList.add('hidden');
+        }
+
+        // ==================== WISHLIST FUNCTIONALITY ====================
+        function toggleWishlist(bookId, event = null) {
+            if (event) event.stopPropagation();
+            const book = BOOKS.find(b => b.id === bookId);
+            if (wishlist.includes(bookId)) {
+                wishlist = wishlist.filter(id => id !== bookId);
+                showToast(`Removed "${book.title}" from wishlist.`);
+            } else {
+                wishlist.push(bookId);
+                showToast(`Saved "${book.title}" to wishlist!`);
+            }
+            saveState();
+            // Refresh visible grids so heart icon updates
+            renderBookGrid(BOOKS.filter(b => b.featured).slice(0, 8), 'featured-books-grid');
+            renderBookGrid(BOOKS.filter(b => b.bestseller).slice(0, 8), 'bestselling-books-grid');
+            if (!document.getElementById('view-catalog').classList.contains('hidden')) {
+                applyCatalogFilters();
+            }
+        }
+
+        function toggleWishlistDrawer() {
+            const overlay = document.getElementById('wishlist-drawer-overlay');
+            overlay.classList.toggle('hidden');
+            if (!overlay.classList.contains('hidden')) {
+                renderWishlistItems();
+            }
+        }
+
+        function renderWishlistItems() {
+            const container = document.getElementById('wishlist-items-container');
+            if (wishlist.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-16 space-y-3">
+                        <i class="fa-regular fa-heart text-4xl text-beige-300"></i>
+                        <h4 class="font-serif text-xl font-bold text-brown-900">Your wishlist is empty</h4>
+                        <p class="text-sm text-brown-700">Tap the heart icon on any book to save it for later.</p>
+                    </div>
+                `;
+                return;
+            }
+            container.innerHTML = wishlist.map(id => {
+                const book = BOOKS.find(b => b.id === id);
+                if (!book) return '';
+                return `
+                    <div class="bg-white p-3.5 rounded-2xl border border-beige-200 flex items-center gap-3.5">
+                        <img src="${book.cover}" onerror="this.src='https://placehold.co/100x150/42291E/FDFBF7?text=Book'" alt="${book.title}" class="w-14 h-20 object-cover rounded-lg">
+                        <div class="flex-1 min-w-0">
+                            <h4 class="font-serif font-bold text-sm text-brown-900 truncate">${book.title}</h4>
+                            <p class="text-xs text-brown-700">${book.author}</p>
+                            <p class="font-bold text-brand-600 text-sm mt-1">₹${book.price}</p>
+                            <button onclick="addToCart(${book.id}); toggleWishlistDrawer();" class="mt-2 px-3 py-1.5 rounded-lg bg-brown-900 hover:bg-brand-500 text-white text-xs font-semibold transition-colors">
+                                Move to Cart
+                            </button>
+                        </div>
+                        <button onclick="toggleWishlist(${book.id}); renderWishlistItems();" class="text-rose-500 p-2">
+                            <i class="fa-solid fa-trash-can text-sm"></i>
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateBadges() {
+            const cartCount = cart.reduce((sum, item) => sum + item.qty, 0);
+            document.getElementById('cart-badge').textContent = cartCount;
+
+            const wishBadge = document.getElementById('wishlist-badge');
+            if (wishlist.length > 0) {
+                wishBadge.textContent = wishlist.length;
+                wishBadge.classList.remove('hidden');
+            } else {
+                wishBadge.classList.add('hidden');
+            }
+        }
+
+        // ==================== AUTHENTICATION MODAL ====================
+        function openAuthModal(mode = 'login') {
+            if (currentUser) {
+                currentUser = null;
+                localStorage.removeItem('luminary_user');
+                updateAuthUI();
+                showToast('Signed out successfully.');
+                return;
+            }
+            switchAuthTab(mode);
+            document.getElementById('auth-modal').classList.remove('hidden');
+        }
+
+        function closeAuthModal() {
+            document.getElementById('auth-modal').classList.add('hidden');
+        }
+
+        function switchAuthTab(mode) {
+            authMode = mode;
+            const nameField = document.getElementById('signup-name-field');
+            const title = document.getElementById('auth-modal-title');
+            const btn = document.getElementById('auth-submit-btn');
+            const tabLogin = document.getElementById('tab-login');
+            const tabSignup = document.getElementById('tab-signup');
+
+            if (mode === 'signup') {
+                nameField.classList.remove('hidden');
+                title.textContent = 'Join Luminary Books';
+                btn.textContent = 'Create Account';
+                tabSignup.className = 'py-2 rounded-lg bg-white text-brown-900 shadow-xs transition-all';
+                tabLogin.className = 'py-2 rounded-lg text-brown-700 hover:text-brown-900 transition-all';
+            } else {
+                nameField.classList.add('hidden');
+                title.textContent = 'Welcome Back Reader';
+                btn.textContent = 'Sign In';
+                tabLogin.className = 'py-2 rounded-lg bg-white text-brown-900 shadow-xs transition-all';
+                tabSignup.className = 'py-2 rounded-lg text-brown-700 hover:text-brown-900 transition-all';
+            }
+        }
+
+        function handleAuthSubmit(e) {
+            e.preventDefault();
+            const email = document.getElementById('auth-email').value;
+            const nameInput = document.getElementById('auth-name').value;
+            const displayName = authMode === 'signup' && nameInput ? nameInput : email.split('@')[0];
+            currentUser = { name: displayName, email };
+            localStorage.setItem('luminary_user', JSON.stringify(currentUser));
+            updateAuthUI();
+            closeAuthModal();
+            showToast(`Welcome, ${displayName}! Happy reading.`);
+        }
+
+        function updateAuthUI() {
+            const btnText = document.getElementById('auth-btn-text');
+            if (currentUser) {
+                btnText.textContent = `Hi, ${currentUser.name} (Logout)`;
+            } else {
+                btnText.textContent = 'Sign In';
+            }
+        }
+
+        // ==================== FORMS & TOAST NOTIFICATIONS ====================
+        function handleNewsletterSubmit(e) {
+            e.preventDefault();
+            e.target.reset();
+            showToast('Subscribed! Use code WELCOME100 for ₹100 off your order.');
+        }
+
+        function handleContactSubmit(e) {
+            e.preventDefault();
+            e.target.reset();
+            showToast('Thank you! Our support team will reply within 4 hours.');
+        }
+
+        function showToast(message) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'bg-brown-900 text-white px-4 py-3 rounded-xl shadow-xl border border-brown-700 text-sm font-medium flex items-center gap-2.5 transform transition-all duration-300 translate-y-2 opacity-0';
+            toast.innerHTML = `<i class="fa-solid fa-circle-check text-brand-500"></i> <span>${message}</span>`;
+            container.appendChild(toast);
+
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            });
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
